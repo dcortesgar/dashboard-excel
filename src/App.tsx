@@ -120,9 +120,26 @@ const CRITICITY_COLORS: Record<string, string> = {
 }
 const GRAPH_COLOR_IN = '#1334BC'
 const GRAPH_COLOR_OUT = '#F40B32'
-const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL ??
-  (import.meta.env.PROD ? '/api/documents/upload' : 'http://127.0.0.1:10000/api/documents/upload')
+
+function resolveBackendUrl() {
+  const configuredValue = import.meta.env.VITE_BACKEND_URL?.trim().replace(/^["']|["']$/g, '')
+
+  if (!configuredValue) {
+    return import.meta.env.PROD ? '/api/documents/upload' : 'http://127.0.0.1:10000/api/documents/upload'
+  }
+
+  if (configuredValue.startsWith('/')) {
+    return configuredValue
+  }
+
+  if (/^https?:\/\//i.test(configuredValue)) {
+    return configuredValue
+  }
+
+  return `https://${configuredValue}`
+}
+
+const BACKEND_URL = resolveBackendUrl()
 
 function SidebarButton({
   item,
