@@ -1,15 +1,12 @@
 import { useState } from 'react'
 
-type DistributionItem = {
-  name: string
-  value: number
-}
-
 type RowItem = Record<string, unknown>
 
 type UploadResponse = {
-  totalDocuments: number
-  distribution: DistributionItem[]
+  totalInterfaces: number
+  criticidadAlta: number
+  criticidadMedia: number
+  criticidadBaja: number
   rows: RowItem[]
 }
 
@@ -59,8 +56,8 @@ export default function ExcelDocumentsDashboard() {
 
   return (
     <div style={{ padding: 20, fontFamily: 'Arial, sans-serif' }}>
-      <h1>Dashboard desde Excel</h1>
-      <p>Selecciona un archivo Excel y genera el tablero.</p>
+      <h1>Dashboard RCI</h1>
+      <p>Sube el Registro de Control de Interfaces para analizar la criticidad.</p>
 
       <div style={{ marginBottom: 20 }}>
         <input
@@ -101,48 +98,20 @@ export default function ExcelDocumentsDashboard() {
         <>
           <div
             style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: 16,
               marginBottom: 24,
-              padding: 16,
-              border: '1px solid #ddd',
-              borderRadius: 8,
-              maxWidth: 300,
-              backgroundColor: '#f9f9f9',
             }}
           >
-            <h2 style={{ margin: 0, fontSize: 18 }}>Total de documentos</h2>
-            <p style={{ fontSize: 28, fontWeight: 'bold', margin: '10px 0 0 0' }}>
-              {response.totalDocuments}
-            </p>
-          </div>
-
-          <div style={{ marginBottom: 24 }}>
-            <h2>Distribución por estatus</h2>
-            <table
-              style={{
-                borderCollapse: 'collapse',
-                width: '100%',
-                maxWidth: 500,
-              }}
-            >
-              <thead>
-                <tr>
-                  <th style={thStyle}>Estatus</th>
-                  <th style={thStyle}>Cantidad</th>
-                </tr>
-              </thead>
-              <tbody>
-                {response.distribution.map((item) => (
-                  <tr key={item.name}>
-                    <td style={tdStyle}>{item.name}</td>
-                    <td style={tdStyle}>{item.value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Card title="Interfaces totales" value={response.totalInterfaces} color="#0d6efd" />
+            <Card title="Criticidad alta" value={response.criticidadAlta} color="#dc3545" />
+            <Card title="Criticidad media" value={response.criticidadMedia} color="#fd7e14" />
+            <Card title="Criticidad baja" value={response.criticidadBaja} color="#198754" />
           </div>
 
           <div>
-            <h2>Tabla de documentos</h2>
+            <h2>Tabla RCI</h2>
 
             {response.rows.length === 0 ? (
               <p>No hay datos en el archivo.</p>
@@ -152,7 +121,7 @@ export default function ExcelDocumentsDashboard() {
                   style={{
                     borderCollapse: 'collapse',
                     width: '100%',
-                    minWidth: 700,
+                    minWidth: 900,
                   }}
                 >
                   <thead>
@@ -181,6 +150,31 @@ export default function ExcelDocumentsDashboard() {
           </div>
         </>
       )}
+    </div>
+  )
+}
+
+function Card({
+  title,
+  value,
+  color,
+}: {
+  title: string
+  value: number
+  color: string
+}) {
+  return (
+    <div
+      style={{
+        padding: 16,
+        borderRadius: 10,
+        backgroundColor: '#f8f9fa',
+        borderLeft: `8px solid ${color}`,
+        boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+      }}
+    >
+      <div style={{ fontSize: 14, color: '#555' }}>{title}</div>
+      <div style={{ fontSize: 30, fontWeight: 'bold', marginTop: 8 }}>{value}</div>
     </div>
   )
 }
