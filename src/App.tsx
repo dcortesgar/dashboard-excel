@@ -123,20 +123,22 @@ const GRAPH_COLOR_OUT = '#F40B32'
 
 function resolveBackendUrl() {
   const configuredValue = import.meta.env.VITE_BACKEND_URL?.trim().replace(/^["']|["']$/g, '')
+  const localDevelopmentUrl = 'http://127.0.0.1:10000/api/documents/upload'
+  const productionFallbackPath = '/api/documents/upload'
 
   if (!configuredValue) {
-    return import.meta.env.PROD ? '/api/documents/upload' : 'http://127.0.0.1:10000/api/documents/upload'
+    return import.meta.env.PROD ? productionFallbackPath : localDevelopmentUrl
   }
 
-  if (configuredValue.startsWith('/')) {
-    return configuredValue
-  }
+  const candidate = configuredValue.startsWith('/') || /^https?:\/\//i.test(configuredValue)
+    ? configuredValue
+    : `https://${configuredValue}`
 
-  if (/^https?:\/\//i.test(configuredValue)) {
-    return configuredValue
+  try {
+    return new URL(candidate, window.location.origin).toString()
+  } catch {
+    return import.meta.env.PROD ? productionFallbackPath : localDevelopmentUrl
   }
-
-  return `https://${configuredValue}`
 }
 
 const BACKEND_URL = resolveBackendUrl()
