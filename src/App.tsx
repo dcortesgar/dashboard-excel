@@ -1512,11 +1512,31 @@ export default function App() {
         method: 'POST',
         body: formData,
       })
+      const rawBody = await res.text()
+      let data: Record<string, unknown> = {}
 
-      const data = await res.json()
+      if (rawBody.trim()) {
+        try {
+          data = JSON.parse(rawBody) as Record<string, unknown>
+        } catch {
+          throw new Error(
+            `El backend respondio con un formato invalido (${res.status} ${res.statusText}). Verifica la URL y el servicio en Render.`
+          )
+        }
+      }
 
       if (!res.ok) {
-        throw new Error(data?.error || 'No se pudo procesar el archivo RCI.')
+        const backendError =
+          typeof data?.error === 'string'
+            ? data.error
+            : rawBody.trim() || `No se pudo procesar el archivo RCI (${res.status} ${res.statusText}).`
+        throw new Error(backendError)
+      }
+
+      if (!rawBody.trim()) {
+        throw new Error(
+          `El backend devolvio una respuesta vacia (${res.status} ${res.statusText}). Verifica el servicio publicado en Render.`
+        )
       }
 
       setResponse({
