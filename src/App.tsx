@@ -12,7 +12,6 @@ import {
   ShieldCheck,
   ShieldMinus,
   SunMedium,
-  Upload,
   User,
 } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
@@ -121,7 +120,6 @@ const CRITICITY_COLORS: Record<string, string> = {
 }
 const GRAPH_COLOR_IN = '#1334BC'
 const GRAPH_COLOR_OUT = '#F40B32'
-const GRAPH_COLOR_NONE = '#C9BFD4'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://127.0.0.1:10000/api/documents/upload'
 
 function SidebarButton({
@@ -1175,7 +1173,7 @@ function GrafoView({
 
     const radius = 300
     const labelRadius = 352
-    const nodes = leaves.map((leaf, index) => {
+    const nodes: GraphNode[] = leaves.map((leaf, index) => {
       const angle = (index / Math.max(leaves.length, 1)) * Math.PI * 2 - Math.PI / 2
       const point = polarPoint(angle, radius)
       const textPoint = polarPoint(angle, labelRadius)
