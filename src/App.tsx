@@ -93,6 +93,10 @@ type GraphLink = {
   interfaceCode: string
 }
 
+type UploadResponsePayload = Partial<UploadResponse> & {
+  error?: string
+}
+
 type UploadResponse = {
   totalInterfaces: number
   criticidadAlta: number
@@ -1513,7 +1517,7 @@ export default function App() {
         body: formData,
       })
       const rawBody = await res.text()
-      let data: Record<string, unknown> = {}
+      let data: UploadResponsePayload = {}
 
       if (rawBody.trim()) {
         try {
@@ -1541,6 +1545,10 @@ export default function App() {
 
       setResponse({
         ...data,
+        totalInterfaces: typeof data.totalInterfaces === 'number' ? data.totalInterfaces : 0,
+        criticidadAlta: typeof data.criticidadAlta === 'number' ? data.criticidadAlta : 0,
+        criticidadMedia: typeof data.criticidadMedia === 'number' ? data.criticidadMedia : 0,
+        criticidadBaja: typeof data.criticidadBaja === 'number' ? data.criticidadBaja : 0,
         distribution: Array.isArray(data?.distribution) ? data.distribution : [],
         disciplineSummary: Array.isArray(data?.disciplineSummary) ? data.disciplineSummary : [],
         matrix:
